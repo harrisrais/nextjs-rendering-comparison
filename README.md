@@ -1,36 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧭 Next.js Rendering Modes Demo — Pages Router & App Router
 
-## Getting Started
+This project demonstrates **all 4 major rendering strategies** in **Next.js**, implemented in **both the Pages Router** (legacy) and the **App Router** (Next.js 13+).  
+It’s a great reference for understanding how **CSR, SSR, SSG, and ISR** work in both systems.
 
-First, run the development server:
+## 🚀 Features
+
+- ✅ Client-Side Rendering (CSR)
+- ✅ Server-Side Rendering (SSR)
+- ✅ Static Site Generation (SSG)
+- ✅ Incremental Static Regeneration (ISR)
+- 💅 Styled with Tailwind CSS
+- 🧱 Implemented in **both Pages & App Router**
+
+## 🗂️ Folder Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+next-render-demo/
+│
+├── app/ # ⚡ Next.js App Router (13+)
+│ ├── layout.tsx # Shared layout for App Router
+│ ├── page.tsx # App Router Home
+│ ├── csr/page.tsx # Client-Side Rendering example
+│ ├── ssr/page.tsx # Server-Side Rendering example
+│ ├── ssg/page.tsx # Static Site Generation example
+│ ├── isr/page.tsx # Incremental Static Regeneration example
+│ └── api/time/route.ts # API route for App Router CSR
+│
+├── pages/ # 🧱 Classic Pages Router
+│ ├── api/time.ts # API route for CSR (Pages Router)
+│ ├── csr.tsx # Client-Side Rendering
+│ ├── ssr.tsx # Server-Side Rendering
+│ ├── ssg.tsx # Static Site Generation
+│ ├── isr.tsx # Incremental Static Regeneration
+│ └── index.tsx # Home for Pages Router
+│
+├── styles/
+│ └── globals.css # Tailwind base styles
+│
+├── public/
+├── tailwind.config.js
+├── postcss.config.mjs
+├── package.json
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚙️ Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+git clone https://github.com/your-username/next-render-demo.git
+cd next-render-demo
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🌐 Rendering Examples
 
-## Learn More
+### 🧩 1. Client-Side Rendering (CSR)
 
-To learn more about Next.js, take a look at the following resources:
+**Paths:**
+- `/csr` (App Router)
+- `/csr` (Pages Router)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🧠 Data fetched **on the client** via `useEffect`.  
+No pre-rendered HTML.  
+👉 *View Source (`Ctrl + U`) → time not visible.*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+### ⚡ 2. Server-Side Rendering (SSR)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Paths:**
+- `/ssr` (App Router)
+- `/ssr` (Pages Router)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Data fetched **on each request** from the server.  
+👉 *View Source → current time visible.*
+
+---
+
+### 📦 3. Static Site Generation (SSG)
+
+**Paths:**
+- `/ssg` (App Router)
+- `/ssg` (Pages Router)
+
+Page generated **at build time** and never changes until the next build.  
+👉 *Same time always, even after refresh.*
+
+---
+
+### 🔄 4. Incremental Static Regeneration (ISR)
+
+**Paths:**
+- `/isr` (App Router)
+- `/isr` (Pages Router)
+
+Static page that **regenerates every 10 seconds**.
+
+- Refresh before 10s → same time  
+- Refresh after 10s → updated time (regenerated in background)
+
+
+## 🧠 Tech Stack
+
+- **Next.js 14+**
+- **React 18**
+- **TypeScript**
+- **Tailwind CSS**
+- **App Router + Pages Router**
+
+## 📜 License
+
+This project is open-source under the **MIT License**.
+
+
+## ✨ About
+
+This repository demonstrates and compares **rendering models** in both:
+
+- 🧱 The **Pages Router (Next.js legacy)**
+- ⚡ The **App Router (Next.js 13+)**
+
+It’s designed as a **hands-on educational tool** for developers learning how Next.js handles **CSR, SSR, SSG, and ISR** under the hood.

@@ -1,0 +1,111 @@
+CSR
+
+🧠 How it works
+
+"use client" → runs only in browser.
+
+The useEffect() hook executes after page loads.
+
+fetch("/api/time") runs in the browser, not at build or server time.
+
+You’ll see:
+
+Empty/“Loading…” → then updates when API returns.
+
+Background color changes on each navigation (shows re-render).
+
+🧩 Result:
+View HTML source (Ctrl+U) → it won’t show actual time.
+Because it’s client-rendered after hydration.
+
+---
+
+SSR
+
+🧠 How it works
+
+export const dynamic = "force-dynamic" → forces the page to be rendered on every request (no caching).
+
+Runs on the server for each request.
+
+HTML source will always show the latest time.
+
+Background color changes every refresh.
+
+🧩 Result:
+
+Refresh → new time + color every time.
+
+View source → always up-to-date
+
+---
+
+SSG
+
+🧠 How it works
+
+Runs once at build (next build).
+
+Produces static HTML saved in .next/server/app/ssg.html.
+
+No regeneration, no fetching.
+
+Even after refresh → same time + color.
+
+🧩 Result:
+
+View source → fixed HTML timestamp.
+
+Rebuild app (npm run build) → new time and color.
+
+---
+
+ISR
+
+🧠 How it works
+
+Page pre-rendered once at build.
+
+Next.js stores the static HTML + JSON.
+
+When you visit /isr:
+
+You get the cached version (fast).
+
+If it’s been >10 seconds, the first request after that triggers regeneration.
+
+The page is rebuilt in background (you’ll see a log in terminal).
+
+Future visitors get the new version.
+
+🧩 Result:
+
+Refresh < 10s → same time + color.
+
+Wait > 10s → refresh → new background + time (and console log).
+
+---
+
+🔍 Quick Summary Table
+| Mode    | Declaration                 | Runs       | Rebuilds      | Where Render Happens | View Source              |
+| ------- | --------------------------- | ---------- | ------------- | -------------------- | ------------------------ |
+| **CSR** | `"use client"`              | Client     | Every visit   | Browser              | ❌ Not visible            |
+| **SSR** | `dynamic = "force-dynamic"` | Server     | Every request | Server               | ✅ Always updates         |
+| **SSG** | `dynamic = "force-static"`  | Build time | Never         | Build                | ✅ Fixed                  |
+| **ISR** | `revalidate = N`            | Server     | Every N sec   | Server + Cache       | ✅ Changes after interval |
+
+---
+
+🧪 How to Test Each
+
+Run your app in production mode (important):
+npm run build
+npm start
+
+Then visit each route:
+| Route  | Expected Behavior                                               |
+| ------ | --------------------------------------------------------------- |
+| `/csr` | Loads blank → fills time dynamically, color changes every visit |
+| `/ssr` | New color + time on every refresh                               |
+| `/ssg` | Same color + time even after refresh                            |
+| `/isr` | Same until ~10s, then refresh → new color + time                |

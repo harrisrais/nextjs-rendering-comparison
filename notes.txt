@@ -1,0 +1,153 @@
+Start your server:
+
+```bash
+npm run dev
+```
+
+Then open these pages in your browser:
+
+| Route  | What to Observe                                                                                                                         |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `/csr` | The page loads **immediately**, then the time appears **a moment later** (fetched on client). Refresh quickly → new time every refresh. |
+| `/ssr` | The time updates **on every refresh** (fresh server render each time).                                                                  |
+| `/ssg` | The time **never changes** unless you rebuild (`npm run build && npm start`).                                                           |
+| `/isr` | The time stays same for ~10 seconds, then after 10s, a new request **regenerates** it with a new time.                                  |
+
+---
+
+You can **see what happens** using browser DevTools or your terminal:
+
+### ✅ **CSR**
+
+* Open **Network tab → Disable cache**
+* Refresh `/csr`
+* You’ll see a **XHR fetch** request to `/api/time`
+* HTML came empty → JS filled it later
+
+### ✅ **SSR**
+
+* View page source (`Ctrl+U`)
+* You’ll see the **time is already in HTML**
+* Refresh → new HTML each time
+
+### ✅ **SSG**
+
+* View source (`Ctrl+U`)
+* The time is static (same even if you refresh)
+* Only rebuild (`npm run build && npm start`) changes it
+
+### ✅ **ISR**
+
+* Refresh every few seconds
+* You’ll see same time until 10 seconds pass
+* After that, first refresh triggers regeneration (may take 1–2s)
+* Then new HTML is served
+
+---
+
+# 🧠 TL;DR — What You’ll See
+
+| Type    | Refresh Behavior                       | How to Confirm                  |
+| ------- | -------------------------------------- | ------------------------------- |
+| **CSR** | Always new data (via fetch in browser) | Check Network tab (XHR request) |
+| **SSR** | Always new HTML from server            | View Source → time changes      |
+| **SSG** | Never changes (until rebuild)          | View Source → fixed HTML        |
+| **ISR** | Changes after 10s (lazy rebuild)       | Refresh after 10s → new time    |
+
+---
+
+
+
+Perfect 👏 — you’ve just noticed something that **every Next.js learner stumbles on at first**:
+the difference between **dev mode (`npm run dev`)** and **production mode (`npm run build && npm start`)**.
+
+Let’s clear this up carefully:
+
+---
+
+## 🧠 Why SSG/ISR behave “wrong” in dev mode
+
+When you run:
+
+```bash
+npm run dev
+```
+
+Next.js runs in **development mode**, and in that mode:
+
+* **`getStaticProps` and ISR are re-run on every request**.
+  (So even SSG will look like it’s generating new HTML every time.)
+* ISR’s revalidation timing is **disabled** — it just rebuilds instantly.
+* Everything feels like SSR — it’s intentional so you can develop faster.
+
+That’s why you saw:
+
+| Page    | Behavior in Dev Mode                                                  |
+| ------- | --------------------------------------------------------------------- |
+| **SSG** | Regenerates time on every refresh (acts like SSR)                     |
+| **ISR** | Doesn’t actually “revalidate after 10s,” it just rebuilds immediately |
+
+✅ So your code is **completely correct** — you’re just testing it in a mode where Next.js ignores build-time caching.
+
+---
+
+## ⚙️ How to Test Properly (Production Mode)
+
+1. Build your app:
+
+   ```bash
+   npm run build
+   ```
+
+2. Start it in production mode:
+
+   ```bash
+   npm start
+   ```
+
+Now open these URLs:
+
+| Route  | Expected Behavior                                                                                                                                           |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/ssg` | The timestamp is **frozen**. Refreshing doesn’t change it. (View source — same HTML.)                                                                       |
+| `/isr` | The time stays the same for **10 seconds**. After 10 seconds, the *next* request regenerates a new static page (you’ll see a brief delay, then a new time). |
+
+---
+
+## 🧩 Quick Tip: How to Verify
+
+### ✅ Check via “View Source” (Ctrl + U)
+
+* In `/ssg`, the HTML shows the same timestamp across refreshes.
+* In `/isr`, after 10 seconds, refresh → new timestamp (new HTML).
+
+### ✅ Check `.next/server/pages` folder
+
+After you build, look inside:
+
+```
+.next/server/pages/
+```
+
+You’ll see:
+
+```
+ssg.html
+isr.html
+```
+
+Those files are generated **at build time** — and ISR will regenerate them when revalidation occurs in production.
+
+---
+
+## 🧾 TL;DR
+
+| Mode                                          | SSG Behavior       | ISR Behavior                   |
+| --------------------------------------------- | ------------------ | ------------------------------ |
+| **Development (`npm run dev`)**               | Always regenerates | Always regenerates (no timing) |
+| **Production (`npm run build && npm start`)** | Truly static       | Revalidates after set interval |
+
+---
+
+So your setup is 100% correct ✅
+You just need to test **in production mode** to see real **SSG/ISR caching behavior**.

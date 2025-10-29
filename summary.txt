@@ -1,0 +1,6 @@
+| Rendering Type | Pages Router                    | App Router                                |
+| -------------- | ------------------------------- | ----------------------------------------- |
+| **CSR**        | `useEffect()` inside component  | `"use client"` + `useEffect()`            |
+| **SSR**        | `getServerSideProps`            | `fetch(..., { cache: "no-store" })`       |
+| **SSG**        | `getStaticProps`                | `fetch(..., { cache: "force-cache" })`    |
+| **ISR**        | `getStaticProps` + `revalidate` | `fetch(..., { next: { revalidate: X } })` |
